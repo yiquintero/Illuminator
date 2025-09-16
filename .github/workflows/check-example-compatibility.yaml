@@ -24,55 +24,46 @@ jobs:
       # https://github.com/actions/checkout
       - uses: actions/checkout@v4
 
-      # Checkout a copy of the educational_material repository
-      - uses: actions/checkout@v4
-        with:
-          repository: illuminator-team/educational_material
-          path: educational_material
+      # # Create conda environment called illuminator
+      # - uses: conda-incubator/setup-miniconda@v3
+      #   with:
+      #     activate-environment: illuminator
+      #     auto-activate-base: false
 
-      # Create conda environment called illuminator
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          activate-environment: illuminator
-          auto-activate-base: false
-
-      # Update illuminator conda environment with the packages from environment.yml
-      - name: Create conda environment from environment.yml
-        run: conda env update -n illuminator -f environment.yml
-
-      # Uninstall the Illuminator from the environment (we want to build from source)
-      - name: Uninstall Illuminator from illuminator-examples environment
-        shell: bash -l {0}
-        run: |
-          pip freeze
-          echo "--------------- HELLO ----------------"
-          pip uninstall -y illuminator
-
-      # Install the Illuminator from the current commit (build it from source)
+      # Install the Illuminator using the current commit (build it from source)
       - name: Install the Illuminator from the current commit
         shell: bash -l {0}
         run: |
-          pip freeze
-          echo "--------------- HELLO ----------------"
-          git status
-          echo "--------------- HELLO ----------------"
           pip install .
-          illuminator --version
 
-      # # A comment for this step
-      # - name: Test
+      # Install the dependencies for the educational_material tests
+      # These are listed in educational_material/environment.yml
+      - name: Install the Illuminator from the current commit
+        shell: bash -l {0}
+        run: |
+          pip install pytest nbclient nbformat
+
+
+
+      # # Update illuminator conda environment with the packages from environment.yml
+      # - name: Create conda environment from environment.yml
+      #   run: conda env update -n illuminator -f environment.yml
+
+      # # Uninstall the Illuminator from the environment (we want to build from source)
+      # - name: Uninstall Illuminator from illuminator-examples environment
       #   shell: bash -l {0}
       #   run: |
+      #     pip uninstall -y illuminator
 
-      #     pwd
-      #     echo "----------------------- HEY --------------------"
-      #     ls ..
-      #     echo "----------------------- HEY --------------------"
-      #     ls 
+      # # Install the Illuminator from the current commit (build it from source)
+      # - name: Install the Illuminator from the current commit
+      #   shell: bash -l {0}
+      #   run: |
+      #     pip install .
 
-      # # # Compile Harmony
-      # # - name: Compile Harmony
-      # #   shell: bash -l {0}
-      # #   run: |
-      # #     cd build
-      # #     cmake --build . --config Release 
+
+      # # Checkout a copy of the educational_material repository
+      # - uses: actions/checkout@v4
+      #   with:
+      #     repository: illuminator-team/educational_material
+      #     path: educational_material
