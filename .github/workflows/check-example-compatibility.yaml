@@ -24,33 +24,45 @@ jobs:
       # https://github.com/actions/checkout
       - uses: actions/checkout@v4
 
-      # Checkout a copy of the Illuminator examples repository
+      # Checkout a copy of the educational_material repository
       - uses: actions/checkout@v4
         with:
           repository: illuminator-team/educational_material
           path: educational_material
 
-      # - uses: conda-incubator/setup-miniconda@v3
-      #   with:
-      #       activate-environment: harmony
-      #       auto-activate-base: false
+      # Create conda environment called illuminator-examples
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: illuminator-examples
+          auto-activate-base: false
 
-      # - name: Create conda environment from environment.yml
-      #   run: conda env update -n harmony -f environment.yml
+      # Update environment with the packages from educational_material/environment.yml
+      - name: Create conda environment from educational_material/environment.yml
+        run: conda env update -n illuminator-examples -f educational_material/environment.yml
 
-      # A comment for this step
-      - name: Test
+      # Uninstall the illuminator from the environment
+      - name: Uninstall Illuminator from illuminator-examples environment
         shell: bash -l {0}
         run: |
-          pwd
-          echo "----------------------- HEY --------------------"
-          ls ..
-          echo "----------------------- HEY --------------------"
-          ls 
+          pip freeze
+          echo "--------------- HELLO ----------------"
+          pip uninstall illuminator
 
-      # # Compile Harmony
-      # - name: Compile Harmony
+
+      # # A comment for this step
+      # - name: Test
       #   shell: bash -l {0}
       #   run: |
-      #     cd build
-      #     cmake --build . --config Release 
+
+      #     pwd
+      #     echo "----------------------- HEY --------------------"
+      #     ls ..
+      #     echo "----------------------- HEY --------------------"
+      #     ls 
+
+      # # # Compile Harmony
+      # # - name: Compile Harmony
+      # #   shell: bash -l {0}
+      # #   run: |
+      # #     cd build
+      # #     cmake --build . --config Release 
