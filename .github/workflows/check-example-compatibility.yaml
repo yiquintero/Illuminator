@@ -53,7 +53,6 @@ jobs:
         shell: bash -l {0}
         run: |
           pip freeze
-          illuminator --version
           echo "--------------- HELLO ----------------"
           git status
           echo "--------------- HELLO ----------------"
