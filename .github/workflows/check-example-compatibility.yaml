@@ -41,7 +41,7 @@ jobs:
       - name: Install educational_material/tests dependencies
         shell: bash -l {0}
         run: |
-          pip install pytest nbclient nbformat
+          pip install pytest jupyter nbclient nbformat
 
       # Checkout a copy of the educational_material repository
       - uses: actions/checkout@v4
@@ -50,7 +50,7 @@ jobs:
           path: educational_material
 
       # Run the educational_material tests
-      - name: Install educational_material/tests dependencies
+      - name: Run the tests
         shell: bash -l {0}
         run: |
           cd educational_material
