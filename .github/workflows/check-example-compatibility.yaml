@@ -38,11 +38,23 @@ jobs:
 
       # Install the dependencies for the educational_material tests
       # These are listed in educational_material/environment.yml
-      - name: Install the Illuminator from the current commit
+      - name: Install educational_material/tests dependencies
         shell: bash -l {0}
         run: |
           pip install pytest nbclient nbformat
 
+      # Checkout a copy of the educational_material repository
+      - uses: actions/checkout@v4
+        with:
+          repository: illuminator-team/educational_material
+          path: educational_material
+
+      # Run the educational_material tests
+      - name: Install educational_material/tests dependencies
+        shell: bash -l {0}
+        run: |
+          cd educational_material
+          pytest -v
 
 
       # # Update illuminator conda environment with the packages from environment.yml
