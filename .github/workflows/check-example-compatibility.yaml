@@ -1,4 +1,4 @@
-name: Check Compatibility with Examples (Conda)
+name: Check Compatibility with Examples in educational_material Repository
 
 # Workflow triggers tell GitHub when to run the workflow:
 # a) when there is a new commit on the main or develop branch
@@ -9,9 +9,9 @@ on:
   pull_request:
     branches: [ "main", "develop"]
 
-# This workflow defines one job: check-compatibility
+# This workflow defines one job: check-example-compatibility
 jobs:
-  check-compatibility:
+  check-example-compatibility:
     
     # Use ubuntu-latest runner.
     # See https://github.com/actions/runner-images for a list of available runners.
@@ -20,9 +20,16 @@ jobs:
     steps:
 
       # Checkout a copy of this repository on the runner
+      # Automatically checks out the commit that trigger the workflow
       # We use the "checkout" GitHub Action
       # https://github.com/actions/checkout
       - uses: actions/checkout@v4
+
+      # Checkout a copy of the educational_material repository
+      - uses: actions/checkout@v4
+        with:
+          repository: illuminator-team/educational_material
+          path: educational_material
 
       # Create conda environment called illuminator
       - uses: conda-incubator/setup-miniconda@v3
@@ -30,12 +37,23 @@ jobs:
           activate-environment: illuminator
           auto-activate-base: false
 
-      # Update illuminator conda environment with the packages from environment.yml
-      - name: Create conda environment from environment.yml
+      # Install the dependencies for the educational_material tests
+      # These are listed in educational_material/environment.yml
+      - name: Install educational_material dependencies
+        run: conda env update -n illuminator -f educational_material/environment.yml
+
+      # Uninstall the Illuminator from conda environment (we want to build from source)
+      - name: Uninstall Illuminator from conda environment
+        shell: bash -l {0}
+        run: |
+          pip uninstall -y illuminator
+
+      # Install the Illuminator dependencies listed in illuminator/environment.yml
+      - name: Install educational_material dependencies
         run: conda env update -n illuminator -f environment.yml
 
-      # Uninstall the Illuminator from the environment (we want to build from source)
-      - name: Uninstall Illuminator from illuminator-examples environment
+      # Uninstall the Illuminator from conda environment (we want to build from source)
+      - name: Uninstall Illuminator from conda environment
         shell: bash -l {0}
         run: |
           pip uninstall -y illuminator
@@ -46,54 +64,9 @@ jobs:
         run: |
           pip install .
 
-      # Install the dependencies for the educational_material tests
-      # These are listed in educational_material/environment.yml
-      - name: Install educational_material/tests dependencies
-        shell: bash -l {0}
-        run: |
-          pip install pytest jupyter nbclient nbformat
-
-      # Checkout a copy of the educational_material repository
-      - uses: actions/checkout@v4
-        with:
-          repository: illuminator-team/educational_material
-          path: educational_material
-
       # Run the educational_material tests
       - name: Run the tests
         shell: bash -l {0}
         run: |
           cd educational_material
           pytest -v
-          ls ../tutorials/physical_congestion/
-          echo "-----------HELLO------------"
-          ls ../tutorials/power_balance/
-          echo "-----------HELLO------------"
-          ls ../configurations/IDE_case/
-          echo "-----------HELLO------------"
-          ls ../configurations/tutorial4/
-
-
-
-      # # Update illuminator conda environment with the packages from environment.yml
-      # - name: Create conda environment from environment.yml
-      #   run: conda env update -n illuminator -f environment.yml
-
-      # # Uninstall the Illuminator from the environment (we want to build from source)
-      # - name: Uninstall Illuminator from illuminator-examples environment
-      #   shell: bash -l {0}
-      #   run: |
-      #     pip uninstall -y illuminator
-
-      # # Install the Illuminator from the current commit (build it from source)
-      # - name: Install the Illuminator from the current commit
-      #   shell: bash -l {0}
-      #   run: |
-      #     pip install .
-
-
-      # # Checkout a copy of the educational_material repository
-      # - uses: actions/checkout@v4
-      #   with:
-      #     repository: illuminator-team/educational_material
-      #     path: educational_material
