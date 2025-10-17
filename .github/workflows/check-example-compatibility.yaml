@@ -49,7 +49,7 @@ jobs:
           pip uninstall -y illuminator
 
       # Install the Illuminator dependencies listed in illuminator/environment.yml
-      - name: Install educational_material dependencies
+      - name: Install illuminator dependencies
         run: conda env update -n illuminator -f environment.yml
 
       # Uninstall the Illuminator from conda environment (we want to build from source)
